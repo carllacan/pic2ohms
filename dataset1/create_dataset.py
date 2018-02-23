@@ -11,7 +11,6 @@ Created on Fri Feb 23 20:31:46 2018
 import random
 from PIL import Image
 import numpy as np
-import pandas as pd
 
 from matplotlib import pyplot as plt
 
