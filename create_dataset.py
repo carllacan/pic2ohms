@@ -16,40 +16,47 @@ from matplotlib import pyplot as plt
 
 base_img = Image.open('base_pics/resistor1.png')
 
-dim = 48 # dimensions of the base square image
-num = 100 # number of images to be generated
-p = 0.3 # fraction of resistors pasted
+dataset = 4
 
-imgs = [] # images
+dim = 48 # dimensions of the base square image
+num = 200 # number of images to be generated
+pic_shape = 240, 240
+p = 0.3 # fraction of resistors pasted
+angles = list(range(0, 360, 45))
+xs = range(0, pic_shape[0], pic_shape[0]//5//2)
+ys = range(0, pic_shape[0], pic_shape[0]//5//2)
+pics = [] # images
 boxs = [] # positions
 
+        
 for n in range(0, num):
-    bgcolor = random.randint(0, 255)
-    img = Image.new('F', (240, 240), bgcolor)
-    bs = [] #np.array([]) # boxes for this image
-    for i  in range(0, 5):
-        for j in range(0, 5):
-            if  random.random() < p:
-                x = i*48
-                y = j*48
-                box = (x, y, x + 48, y + 48)
-                img.paste(base_img, box, base_img)
-                bs.extend(box)
-    imgs.append(np.asarray(img, dtype=int).flatten())
+    bgcolor = random.randint(120, 255)
+    pic = Image.new('L', (240, 240), bgcolor)
+    bs = []
+    c = int(p*pic_shape[0]*pic_shape[1]/dim**2)
+    for i  in range(0, c):
+        x = random.choice(xs)
+        y = random.choice(ys)
+        box = (x, y, x + dim, y + dim)
+        img = base_img.rotate(random.choice(angles))
+        pic.paste(img, box, img)
+        bs.extend(box)
+    pics.append(np.asarray(pic, dtype=int).flatten())
     boxs.append(bs)
     
     if n < 5:
         plt.figure()
-        plt.imshow(np.asarray(img), cmap = 'gray' )
+        plt.imshow(np.asarray(pic), cmap = 'gray' )
+        pic.save('datasets/dataset{0}/example{1}.png'.format(
+                dataset,n))
 
 # Fill all rows with -1 to make a rectangular array
 maxl = max([len(bs) for bs in boxs])
 for bs in boxs:
     bs.extend([-1]*(maxl-len(bs)))
     
-dataset = 2
 np.savetxt("datasets/dataset{0}/dataset{0}_imgs.csv".format(dataset), 
-           np.array(imgs), delimiter=',', fmt='%d')
+           np.array(pics), delimiter=',', fmt='%d')
 np.savetxt("datasets/dataset{0}/dataset{0}_boxs.csv".format(dataset), np.array(boxs), 
            delimiter=',', fmt='%d')
 
