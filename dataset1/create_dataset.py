@@ -18,7 +18,7 @@ base_img = Image.open('resistor.jpg')
 
 dim = 48 # dimensions of the base square image
 num = 5 # number of images to be generated
-p = 0.2 # fraction of resistors pasted
+p = 0.3 # fraction of resistors pasted
 
 imgs = [] # images
 boxs = [] # positions
