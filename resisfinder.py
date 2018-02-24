@@ -73,17 +73,11 @@ boxs = np.genfromtxt('dataset1/dataset1_boxs.csv', delimiter=',')
 # Resize the images?
 
 # Resize the box lists
-boxs = boxs.reshape(5, -1, 4)
-
-#for i in range(imgs.shape[0]):
-#    boxes = boxs[i,:]
-#    show_with_boxes(imgs[i,:], boxes)
+boxs = boxs.reshape(boxs.shape[0], -1, 4)
 
 
 # dimensions of the whole pictures, constant for now
 picshape = 240, 240 # height and width
-
-
 
 # Create the random sections (the training data)
 
@@ -156,9 +150,6 @@ model.fit(np.array(data[0:ntrain]),
 ### Validation ####
 
 nval = int(data_size*0.2)
-#preds = model.predict_classes(np.array(secs[0:nval]), 
-#                              verbose=False)
-#acc = (preds.transpose()==np.array(labels[0:nval])).sum()/nval
 a, acc = model.evaluate(np.array(data[0:nval]), np.array(labels[0:nval]),
                         batch_size=128)
 print("Accuracy: {:4.2f} %".format(acc*100))
