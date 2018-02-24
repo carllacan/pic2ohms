@@ -33,7 +33,7 @@ def make_sections(pic, sec_dim, stride):
     for i in range(maxi):
         for j in range(maxj):
             # Section box
-            x1, y1 = i*sec_dim, j*sec_dim
+            x1, y1 = i*stride, j*stride
             x2, y2 = x1 + sec_dim, y1 + sec_dim
             box = np.array((x1, y1, x2, y2))
             boxes.append(box)
@@ -45,14 +45,13 @@ def test_pic(model, pic):
     sec_dim = 48 # section size
     stride = 48 # section stride
     
-            
     boxes = make_sections(pic, sec_dim, stride)
     found = []
     for b in boxes:
         x1, y1 = b[0], b[1]
         x2, y2 = b[2], b[3]
         sec = pic[y1:y2, x1:x2].flatten() 
-        if model.predict_classes(np.array([sec]))[0]:
+        pred = model.predict_classes(np.array([sec]))[0]
+        if pred == 1:
             found.append(b)
-    
     show_with_boxes(pic, found)

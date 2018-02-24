@@ -17,12 +17,13 @@ Created on Fri Feb 23 19:56:17 2018
 import numpy as np
 import random
 
+from PIL import Image
 
 import utils
 #from localizers import Localizer1
-import localizers
+from localizer import Localizer
 
-dataset = 1
+dataset = 2
 imgs_loc = 'datasets/dataset{0}/dataset{0}_imgs.csv'.format(dataset)
 boxs_loc = 'datasets/dataset{0}/dataset{0}_boxs.csv'.format(dataset)
 
@@ -35,10 +36,9 @@ boxs = boxs.reshape(boxs.shape[0], -1, 4)
 # dimensions of the whole pictures, constant for now
 picshape = 240, 240 # height and width
 
-    
  # Create the NN model
  
-localizer = localizers.Localizer1(picshape)
+localizer = Localizer(picshape=(240, 240), hidden_layers=(16,8))
 
 localizer.train(pics, boxs)
 
@@ -46,9 +46,14 @@ i = random.randint(0, pics.shape[0] - 1)
 utils.test_pic(localizer.model, pics[i,:].reshape(240,240))
 
 
-    
+# a hard test, just for fun
 
+resistors = Image.open('resistors.png', mode='r')
+resistors = resistors.convert(mode='F')
+ 
+utils.test_pic(localizer.model, np.asarray(resistors))
 
+localizer.save('datasets/dataset{0}/best_model'.format(dataset))
 
 
 
