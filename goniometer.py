@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Sat Feb 24 12:08:57 2018
+Created on Sat Feb 24 23:24:39 2018
 
 @author: carles
 """
+
+
 
 from keras.models import Sequential
 from keras.layers import Dense
@@ -16,9 +18,9 @@ import random
 import utils
 import h5py 
 
-class Localizer():
+class Goniometer():
     
-    """ ANN model that localizes resistors in a picture """
+    """ ANN model that gets the angle of a resistor """
     def __init__(self, **params):
 
         self.picshape = params['picshape']
