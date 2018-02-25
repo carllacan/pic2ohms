@@ -14,3 +14,14 @@ import random
 
 from localizer import Localizer
 from goniometer import Goniometer
+
+# TODO: showcase localizer and goniometer
+# load the best localizer and goniometer
+# load an image 
+# make a b/w version
+# use  localizer to find resistors
+# pass the subimages to goniometer to read the angles
+# get the subimages from the color picture
+# rotate the subimages back to 0º and output them.
+
+# TODO: implement the reader and use it to tag the subimages
