@@ -19,7 +19,7 @@ base_img = Image.open('base_pics/resistor1.png')
 dataset = 4
 
 dim = 48 # dimensions of the base square image
-num = 200 # number of images to be generated
+num = 500 # number of images to be generated
 pic_shape = 240, 240
 p = 0.3 # fraction of resistors pasted
 angles = list(range(0, 360, 45))

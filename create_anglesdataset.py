@@ -24,16 +24,14 @@ from matplotlib import pyplot as plt
 
 base_img = Image.open('base_pics/resistor1.png')
 
-dataset = 5
+dataset = 6
 
 dim = 48 # dimensions of the base square image
 num = 2000 # number of images to be generated
 
 angle_list = list(range(0, 360, 45))
-pics = [] # images
+pics = []
 angles = []
-
-# TODO: store angles as angles, not classes
 
 for n in range(0, num):
     bgcolor = random.randint(50, 255)

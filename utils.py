@@ -11,12 +11,13 @@ import matplotlib.patches as patches
 import numpy as np
 from keras.utils.np_utils import to_categorical
 
-def show_with_boxes(img, boxes, preds, probs = []):
+def test_localizer(localizer, pic, show_probs = False):
     """ Show an image with a series of boxes drawn over it"""
-#    plt.figure()
-    # TODO: mix this with test_pic
+    
+    boxes, preds, probs = localizer.predict(pic) 
+        
     fig,ax = plt.subplots(1)
-    plt.imshow(img, cmap = 'gray' )
+    plt.imshow(pic, cmap = 'gray' )
     plt.axis("off")
     for i in range(len(boxes)):
         box = boxes[i]
@@ -28,7 +29,7 @@ def show_with_boxes(img, boxes, preds, probs = []):
                                      edgecolor='r',
                                      facecolor='none')
             ax.add_patch(rect)
-        if probs != []:
+        if show_probs:
             color = 'b' if preds[i] else 'r'
             x, y = int(x+w/2), int(y+h/2)
             r = int(0.5*max(probs[i])*w/4)
@@ -80,13 +81,5 @@ def make_sections(pic, sec_dim, stride):
     return boxes
 
 
-def test_pic(localizer, pic, show_probs=False):
-     # TODO: change to test loc
-    """ Predicts the position of resistors on an picture and shows it"""
 
-    boxes, preds, probs = localizer.predict(pic) 
-    if show_probs:           
-        show_with_boxes(pic, boxes, preds, probs)
-    else:         
-        show_with_boxes(pic, boxes, preds)
         
