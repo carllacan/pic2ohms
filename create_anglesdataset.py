@@ -27,7 +27,7 @@ base_img = Image.open('base_pics/resistor1.png')
 dataset = 5
 
 dim = 48 # dimensions of the base square image
-num = 10 # number of images to be generated
+num = 2000 # number of images to be generated
 
 angle_list = list(range(0, 360, 45))
 pics = [] # images
@@ -36,14 +36,14 @@ angles = []
 # TODO: store angles as angles, not classes
 
 for n in range(0, num):
-    bgcolor = random.randint(120, 255)
+    bgcolor = random.randint(50, 255)
     pic = Image.new('L', (dim, dim), bgcolor)
     box = (0, 0, dim, dim)
-    angle = random.randint(0, len(angle_list)-1)
-    img = base_img.rotate(angle_list[angle])
+    angle = random.choice(angle_list)
+    img = base_img.rotate(angle)
     pic.paste(img, box, img)
     pics.append(np.asarray(pic, dtype=int).flatten())
-    angles.append(angle)
+    angles.append((angle+45)%360)
     if n < 5:
         plt.figure()
         plt.imshow(np.asarray(pic), cmap = 'gray' )

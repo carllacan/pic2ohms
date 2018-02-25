@@ -13,9 +13,11 @@ from keras.utils.np_utils import to_categorical
 
 def show_with_boxes(img, boxes, preds, probs = []):
     """ Show an image with a series of boxes drawn over it"""
-    plt.figure()
+#    plt.figure()
+    # TODO: mix this with test_pic
     fig,ax = plt.subplots(1)
     plt.imshow(img, cmap = 'gray' )
+    plt.axis("off")
     for i in range(len(boxes)):
         box = boxes[i]
         x, y = box[0], box[1]
@@ -37,14 +39,29 @@ def show_with_boxes(img, boxes, preds, probs = []):
                                   facecolor=color)
             ax.add_patch(rect)
         
-def show_with_angles(pic, angle, probs=[]):
-    plt.figure()
-    fig,ax = plt.subplots(1)
-    plt.imshow(pic, cmap = 'gray' )
-    angle_num = len(probs)
-    for i in range(angle_num):
-#        line = patches.ConnectionPatch((0,0), (0,0))
-        plt.plot((0,0), (0,0))
+def test_goniometer(goniometer, test_pics):
+    """ Visuzlie the results of a goniometer with 25 resistor pics"""
+    w, h = goniometer.input_shape
+    fig, axs = plt.subplots(5, 5)
+    fig.subplots_adjust(wspace = 0.1, hspace=0.1)
+    angle_list = goniometer.angle_list
+    for i in range(5):
+        for j in range(5):
+            pic = test_pics[i+j*5]
+            pred, probs = goniometer.predict(pic)
+            probs = probs/probs[pred]
+            ax = axs[i][j]
+            ax.imshow(pic, cmap = 'gray' )
+            ax.axis("off")
+            for a in range(len(angle_list)):
+                r = (w/2-1)*probs[a]
+                x = w/2+r*np.cos(-angle_list[a]*np.pi/180)
+                y = h/2+r*np.sin(-angle_list[a]*np.pi/180)
+                if angle_list[a] == angle_list[pred]:
+                    color = 'b'
+                else:
+                    color = 'r'
+                ax.plot([int(w/2), x], [int(h/2), y], color=color)
         
     
         
@@ -66,27 +83,10 @@ def make_sections(pic, sec_dim, stride):
 def test_pic(localizer, pic, show_probs=False):
      # TODO: change to test loc
     """ Predicts the position of resistors on an picture and shows it"""
-#    sec_dim = 48 # section size
-#    stride = 48 # section stride
-#    
-#    boxes = make_sections(pic, sec_dim, stride)
-#    found = []
-#    for b in boxes:
-#        x1, y1 = b[0], b[1]
-#        x2, y2 = b[2], b[3]
-#        sec = pic[y1:y2, x1:x2].flatten() 
-#        pred = model.predict_classes(np.array([sec]))[0]
-#        if pred == 1:
-#            found.append(b)
+
     boxes, preds, probs = localizer.predict(pic) 
     if show_probs:           
         show_with_boxes(pic, boxes, preds, probs)
     else:         
         show_with_boxes(pic, boxes, preds)
-        
-def test_gon(goniometer, pic, show_probs=False):
-    
-     angle, probs = goniometer.predict(pic)
-     
-     show_with_angles(pic, angle, probs)
         

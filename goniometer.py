@@ -20,15 +20,15 @@ class Goniometer():
     """ ANN model that gets the angle of a resistor """
     def __init__(self, **params):
 
-        self.picdim = params['picdim']
-        
+        self.input_shape = params['input_shape']
+        input_dim = self.input_shape[0]*self.input_shape[1]
         hidden_layers = params['hidden_layers']
         rel = lambda: l2(0.2)
 
         self.model = Sequential()
         for l in hidden_layers:
             self.model.add(Dense(l, 
-                                 input_dim = self.picdim**2, 
+                                 input_dim = input_dim,
                                  kernel_initializer="uniform", 
                                  activation="relu", 
                                  kernel_regularizer=rel()))
@@ -47,15 +47,20 @@ class Goniometer():
         
         data = np.array(pics)
         
-        labels = to_categorical(angs)
-       
+        self.angle_list = list(range(0, 360, 45))
+        labels = []
+        for a in angs:
+            c = self.angle_list.index(a)
+            labels.append(c)
+        labels = to_categorical(labels)
+        
         #### Training ####
         
         ntrain = int(data_size*0.8)
         train_inds = random.sample(range(data_size), ntrain)
     
-        self.model.fit(data[train_inds], 
-                       labels[train_inds], 
+        self.model.fit(data[train_inds,:], 
+                       labels[train_inds,:], 
                        batch_size, epochs)
                
         ### Validation ####
@@ -71,9 +76,8 @@ class Goniometer():
     def predict(self, pic):
         """ Takes a picture and returns an array of resistor boxes"""
         
-        angle = self.model.predict_classes(np.array([pic.flatten()]))
-        probs = self.model.predict(np.array([pic.flatten()]))
-
+        angle = self.model.predict_classes(np.array([pic.flatten()]))[0]
+        probs = self.model.predict(np.array([pic.flatten()]))[0]
         return angle, probs
     
    

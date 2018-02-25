@@ -17,32 +17,36 @@ Created on Fri Feb 23 19:56:17 2018
 import numpy as np
 import random
 
-from PIL import Image
-
 import utils
 from goniometer import Goniometer
 
+
 dataset = 5
-imgs_loc = 'datasets/dataset{0}/dataset{0}_imgs.csv'.format(dataset)
+pics_loc = 'datasets/dataset{0}/dataset{0}_imgs.csv'.format(dataset)
 angs_loc = 'datasets/dataset{0}/dataset{0}_angles.csv'.format(dataset)
 
-pics = np.genfromtxt(imgs_loc, delimiter=',')
+pics = np.genfromtxt(pics_loc, delimiter=',')
 angs = np.genfromtxt(angs_loc, delimiter=',', dtype=int)
 
  # Create the NN model
  
-goniometer = Goniometer(picdim=48, 
+goniometer = Goniometer(input_shape=(48,48), 
                         hidden_layers=(42,30,10))
 
-epochs = 20
-batch_size = 30
+epochs = 10
+batch_size = 20
 goniometer.train(pics, angs, epochs, batch_size)
 
-i = random.randint(0, pics.shape[0] - 1)
-pic = pics[i,:].reshape(48,48)
-utils.test_gon(goniometer, pic, show_probs=True)
+# test the goniometer with a number of resistors
 
-# a hard test, just for fun
+test_pics =  []
+for p in range(25):
+    ind = random.randint(0, pics.shape[0] - 1)
+    test_pics.append(pics[ind,:].reshape(48,48))
+    
+utils.test_goniometer(goniometer, test_pics)
+
+# next, a hard test, just for fun
 
 #resistors = Image.open('resistors.png', mode='r')
 #resistors = resistors.convert(mode='F')
