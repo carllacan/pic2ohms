@@ -37,6 +37,16 @@ def show_with_boxes(img, boxes, preds, probs = []):
                                   facecolor=color)
             ax.add_patch(rect)
         
+def show_with_angles(pic, angle, probs=[]):
+    plt.figure()
+    fig,ax = plt.subplots(1)
+    plt.imshow(pic, cmap = 'gray' )
+    angle_num = len(probs)
+    for i in range(angle_num):
+#        line = patches.ConnectionPatch((0,0), (0,0))
+        plt.plot((0,0), (0,0))
+        
+    
         
 def make_sections(pic, sec_dim, stride):
     """ Takes a picture and returns boxes of sections """
@@ -54,6 +64,7 @@ def make_sections(pic, sec_dim, stride):
 
 
 def test_pic(localizer, pic, show_probs=False):
+     # TODO: change to test loc
     """ Predicts the position of resistors on an picture and shows it"""
 #    sec_dim = 48 # section size
 #    stride = 48 # section stride
@@ -72,4 +83,10 @@ def test_pic(localizer, pic, show_probs=False):
         show_with_boxes(pic, boxes, preds, probs)
     else:         
         show_with_boxes(pic, boxes, preds)
+        
+def test_gon(goniometer, pic, show_probs=False):
+    
+     angle, probs = goniometer.predict(pic)
+     
+     show_with_angles(pic, angle, probs)
         
