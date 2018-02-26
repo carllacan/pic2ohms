@@ -46,7 +46,7 @@ utils.test_localizer(localizer, pic, show_probs=True)
 resistors = Image.open('resistors.png', mode='r')
 resistors = resistors.convert(mode='F')
  
-utils.test_localizer(localizer, np.asarray(resistors), show_probs=False)
+utils.test_localizer(localizer, np.asarray(resistors), show_probs=True)
 
 localizer.save('datasets/dataset{0}/best_model'.format(dataset))
 

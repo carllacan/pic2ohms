@@ -10,27 +10,35 @@ from keras.models import Sequential
 from keras.layers import Dense
 from keras.regularizers import l2, l1
 from keras.utils.np_utils import to_categorical
+from keras.models import load_model
 
 import numpy as np
 import random
 import utils
-import h5py 
+#import h5py 
 
 class Localizer():
     
     """ ANN model that localizes resistors in a picture """
     def __init__(self, **params):
 
+        if 'filepath' in params.keys():
+            self.load_model(params['filepath'])
+        else:
+            self.create_model(**params)
+            
+    def create_model(self, **params):
         self.picshape = params['picshape']
         
         hidden_layers = params['hidden_layers']
         rel = lambda: l2(0.2)
-        self.sec_dim = 48
-        self.stride = self.sec_dim//2#int(self.sec_dim/3)
+        self.input_shape = (48,48) #params['input_shape']
+        self.stride = self.input_shape[0]//2#int(self.sec_dim/3)
         self.model = Sequential()
+        input_dim = self.input_shape[0]*self.input_shape[1]
         for l in hidden_layers:
             self.model.add(Dense(l, 
-                                 input_dim = self.sec_dim**2, 
+                                 input_dim = input_dim, 
                                  kernel_initializer="uniform", 
                                  activation="relu", 
                                  kernel_regularizer=rel()))
@@ -39,19 +47,30 @@ class Localizer():
                              activation="softmax",
                              kernel_regularizer=rel()))
                         
+        # for probs log-loss seeems t be better
         self.model.compile(loss="categorical_crossentropy", 
                            optimizer="adam", metrics=['accuracy'])
         
-    def train(self, pics, boxs, epochs, batch_size):
+    def load_model(self, filepath):
+        """Loads a model from a file """
+        self.model = load_model(filepath)
+    
+    def save(self, filepath):
+        """Saves  model to a file """
+        self.model.save(filepath)
         
-        # Make the training data
+    def train(self, pics, boxs, epochs, batch_size):
+        """ Trains the model with a list of pictures """
+        
         picn = pics.shape[0] # number of pics
         data_size = picn*25 # sections to create
         data = []
         labels = []
         
-        sec_dim = self.sec_dim # section size
+        sec_dim = self.input_shape[0] # section size
         stride = self.stride # section stride
+        
+        ### Training data creation ###
         
         for n in range(data_size):
             # Get a random image index
@@ -76,10 +95,10 @@ class Localizer():
             labels.append(to_categorical(label, 2))
             
         #### Training ####
-#        print(data[0:5])
+        
         ntrain = int(data_size*0.8)
-#        epochs = 15
-#        batch_size = 15
+        # TODO: change random.sample to random index generation
+        
         self.model.fit(np.array(data[0:ntrain]), 
                             np.array(labels[0:ntrain]), 
                             batch_size, epochs)
@@ -93,29 +112,14 @@ class Localizer():
         a, acc = self.model.evaluate(np.array(data[0:nval]), 
                                       np.array(labels[0:nval]),
                                       batch_size=128)
-        print("Accuracy: {:4.2f} %".format(acc*100))
-
-    def localize1(self, pic, probs=False):
-        """ Takes a picture and returns an array of resistor boxes"""
+        print("Accuracy: {:4.2f} %".format(acc*100)) 
         
-        found = []
-        boxes = utils.make_sections(pic, self.sec_dim, self.stride)
-        for b in boxes:
-            x1, y1 = b[0], b[1]
-            x2, y2 = b[2], b[3]
-            sec = pic[y1:y2, x1:x2].flatten() 
-            pred = self.model.predict_classes(np.array([sec]))[0]
-            if pred == 1:
-                found.append(b)
-            probs.append(self.model.predict(np.array([sec]))[0])
-
-        return 
-    
     def predict(self, pic):
-        """ Takes a picture and returns an array of resistor boxes"""
-        
+        """ Takes a picture and returns an array the boxes considered,
+        the predictions for each box and trhe probabilities. """
+ 
         secs = []
-        boxes = utils.make_sections(pic, self.sec_dim, self.stride)
+        boxes = utils.make_sections(pic, self.input_shape[0], self.stride)
         for b in boxes:
             x1, y1 = b[0], b[1]
             x2, y2 = b[2], b[3]
@@ -126,6 +130,8 @@ class Localizer():
         return boxes, preds, probs
     
     def localize(self, pic):
+        """ Takes a picture and returns an array of resistor boxes"""
+  
         boxes, preds, probs = self.predict(pic)
         found = []
         for i in range(len(boxes)):
@@ -134,6 +140,3 @@ class Localizer():
                 
         return found
     
-    def save(self, f):
-        """Saves current parameters of the model to a file """
-        self.model.save(f)

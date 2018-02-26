@@ -11,6 +11,7 @@ Created on Sun Feb 25 18:20:33 2018
 
 import numpy as np
 import random
+from PIL import Image
 
 from localizer import Localizer
 from goniometer import Goniometer
@@ -23,5 +24,20 @@ from goniometer import Goniometer
 # pass the subimages to goniometer to read the angles
 # get the subimages from the color picture
 # rotate the subimages back to 0º and output them.
+
+
+localizer = Localizer(filepath='datasets/dataset4/best_model')
+goniometer = Goniometer(filepath='datasets/dataset5/best_model')
+
+
+
+
+
+
+
+
+
+
+
 
 # TODO: implement the reader and use it to tag the subimages
