@@ -29,6 +29,13 @@ from goniometer import Goniometer
 localizer = Localizer(filepath='datasets/dataset4/best_model')
 goniometer = Goniometer(filepath='datasets/dataset5/best_model')
 
+image = Image.open('resistors.png')
+
+image_bw = Image.convert('F')
+
+boxs = localizer.localize(image_bw)
+for b in boxs
+
 
 
 
