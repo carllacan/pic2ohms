@@ -1,10 +1,4 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Sun Feb 25 10:50:25 2018
-
-@author: carles
-"""
+#
 
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
@@ -13,10 +7,7 @@ Created on Fri Feb 23 20:31:46 2018
 
 @author: carles
 """
-
-# Creates set of pictures of resistors with diferent color rings
-
-# (not yet implemented)
+# Creates a picture with a number of resistors in random positions
 
 import random
 from PIL import Image
@@ -29,30 +20,21 @@ base_img = Image.open('base_pics/resistor1.png')
 dataset = 6
 
 dim = 48 # dimensions of the base square image
-num = 5 # number of images to be generated
+num = 2000 # number of images to be generated
 
-ring1_colors = range(9)
-ring2_colors = range(10)
-ring3_colors = range(12)
-ring4_colors = range(2)  # but actually 8 colors
-
+angle_list = list(range(0, 360, 45))
 pics = []
-values = []
+angles = []
+
 for n in range(0, num):
-    bgcolor = random.randint(250, 255)
-    pic = Image.new('RGB', (dim, dim), bgcolor)
+    bgcolor = random.randint(50, 255)
+    pic = Image.new('L', (dim, dim), bgcolor)
     box = (0, 0, dim, dim)
-    ring1 = random.choice(ring1_colors)
-    ring2 = random.choice(ring2_colors)
-    ring3 = random.choice(ring3_colors)
-    ring4 = random.choice(ring4_colors)
-    
-    pic.paste(pic, box, pic)
-    # paste images of the appropriate rings
-    # we would need to get resistors of the appropriate colors
-    
+    angle = random.choice(angle_list)
+    img = base_img.rotate(angle)
+    pic.paste(img, box, img)
     pics.append(np.asarray(pic, dtype=int).flatten())
-    values.append((ring1, ring2, ring3, ring4))
+    angles.append((angle+45)%360)
     if n < 5:
         plt.figure()
         plt.imshow(np.asarray(pic), cmap = 'gray' )
@@ -61,5 +43,5 @@ for n in range(0, num):
         
 np.savetxt("datasets/dataset{0}/dataset{0}_imgs.csv".format(dataset), 
            np.array(pics), delimiter=',', fmt='%d')
-np.savetxt("datasets/dataset{0}/dataset{0}_values.csv".format(dataset), 
-           np.array(values), delimiter=',', fmt='%d')
+np.savetxt("datasets/dataset{0}/dataset{0}_angles.csv".format(dataset), 
+np.array(angles), delimiter=',', fmt='%d')
