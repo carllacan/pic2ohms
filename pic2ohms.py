@@ -11,6 +11,7 @@ Created on Sun Feb 25 18:20:33 2018
 
 import numpy as np
 from matplotlib import pyplot as plt
+from scipy.ndimage import rotate as scprot
 
 import random
 from PIL import Image
@@ -38,11 +39,11 @@ picture = Image.open('test_pictures/test0.png')
 #localizer = Localizer(filepath='datasets/dataset4/best_model')
 #goniometer = Goniometer(filepath='datasets/dataset5/best_model')
 
-picture_bw = np.asarray(picture.convert('F'))
+picture_bw = picture.convert('F')
 
-resis_boxs = localizer.localize(picture_bw)
+resis_boxs = localizer.localize(np.asarray(picture_bw))
 utils.test_localizer(localizer, np.asarray(picture_bw))
-
+plt.show()
 resis_pics = [] # cropped pictures of the resistors
 
 for b in resis_boxs:
@@ -52,7 +53,12 @@ for b in resis_boxs:
     angle = goniometer.angle_list[angle_ind[0]]
     sec = picture.crop((x1, y1, x2, y2))
     print(angle)
-#    sec = sec.rotate(angle+45)
+    plt.figure(figsize=(1,1))
+    plt.axis("off")
+    plt.imshow(np.asarray(sec),cmap = 'gray' )
+    plt.show()
+#    sec = scprot(np.asarray(sec), -angle)
+    sec = sec.rotate(-angle)
     plt.figure(figsize=(1,1))
     plt.axis("off")
     plt.imshow(np.asarray(sec),cmap = 'gray' )
