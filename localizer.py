@@ -21,14 +21,16 @@ class Localizer():
     
     """ ANN model that localizes resistors in a picture """
     def __init__(self, **params):
-
+        self.input_shape = (48,48) #params['input_shape']
+        self.stride = self.input_shape[0]//2#int(self.sec_dim/3)
+        # TODO: make it store the input_shape, or get it from the arch
+        # TODO also the stride
         if 'filepath' in params.keys():
             self.load_model(params['filepath'])
         else:
             self.create_model(**params)
             
     def create_model(self, **params):
-        self.picshape = params['picshape']
         
         hidden_layers = params['hidden_layers']
         rel = lambda: l2(0.2)

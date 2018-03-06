@@ -1,0 +1,2 @@
+* TODO entrenar goniometer amb resis solapades
+* TODO canviar dataset 5 i forma d' entrenar goniometer

@@ -29,7 +29,7 @@ picshape = 240, 240 # height and width
 
  # Create the NN model
  
-localizer = Localizer(picshape=(240, 240), 
+localizer = Localizer(input_shape=(240, 240), 
                       hidden_layers=(42,30,10))
 
 epochs = 20

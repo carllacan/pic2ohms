@@ -20,7 +20,8 @@ class Goniometer():
     
     """ ANN model that gets the angle of a resistor """
     def __init__(self, **params):
-        
+        # TODO: save and load the angle list
+        self.angle_list = list(range(0, 360, 45))
         if 'filepath' in params.keys():
             self.load_model(params['filepath'])
         else:
@@ -63,7 +64,6 @@ class Goniometer():
         
         data = np.array(pics)
         
-        self.angle_list = list(range(0, 360, 45))
         labels = []
         for a in angs:
             c = self.angle_list.index(a)
