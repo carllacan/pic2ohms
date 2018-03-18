@@ -1,2 +1,5 @@
-* TODO entrenar goniometer amb resis solapades
+* TODO switch to np and scipy wherever possible
 * TODO canviar dataset 5 i forma d' entrenar goniometer
+* TODO entrenar goniometer amb resis solapades
+* TODO entrenar amd fondos reals
+* TODO entrenar amb varietat de resistències

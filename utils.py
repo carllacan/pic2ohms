@@ -66,10 +66,10 @@ def test_goniometer(goniometer, test_pics):
         
     
         
-def make_sections(pic, sec_dim, stride):
+def make_sections(pic_shape, sec_dim, stride):
     """ Takes a picture and returns boxes of sections """
-    maxi = int((pic.shape[1] - sec_dim) / stride) +1
-    maxj = int((pic.shape[0] - sec_dim) / stride) +1
+    maxi = int((pic_shape[1] - sec_dim) / stride) +1
+    maxj = int((pic_shape[0] - sec_dim) / stride) +1
     boxes = []
     for i in range(maxi):
         for j in range(maxj):
