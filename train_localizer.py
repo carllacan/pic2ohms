@@ -72,12 +72,9 @@ localizer.train(data, labels, epochs, batch_size)
 
 i = random.randint(0, pics.shape[0] - 1)
 pic = pics[i,:].reshape(240,240)
-utils.test_localizer(localizer, pic, show_probs=True)
-#print(localizer.predict(pic))
+utils.test_localizer(localizer, pic, show_probs=False)
 
-# a hard test, just for fun
-
-resistors = Image.open('test_pictures/resistors.png', mode='r')
+resistors = Image.open('test_pictures/hard_test.png', mode='r')
 resistors = resistors.convert(mode='F')
  
 utils.test_localizer(localizer, np.asarray(resistors), show_probs=False)
