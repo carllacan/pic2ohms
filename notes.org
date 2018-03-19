@@ -3,3 +3,5 @@
 * TODO entrenar goniometer amb resis solapades
 * TODO entrenar amd fondos reals
 * TODO entrenar amb varietat de resistències
+* TODO afegir pates de les resistències
+* TODO transformar els scripts en iterator objects

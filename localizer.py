@@ -21,10 +21,8 @@ class Localizer():
     
     """ ANN model that localizes resistors in a picture """
     def __init__(self, **params):
-        self.input_shape = (48,48) #params['input_shape']
-        self.stride = self.input_shape[0]//2#int(self.sec_dim/3)
-        # TODO: make it store the input_shape, or get it from the arch
-        # TODO also the stride
+        self.input_shape = (48,48)
+        
         if 'filepath' in params.keys():
             self.load_model(params['filepath'])
         else:
@@ -34,18 +32,17 @@ class Localizer():
         
         hidden_layers = params['hidden_layers']
         rel = lambda: l2(0.2)
-        self.input_shape = (48,48) #params['input_shape']
-        self.stride = self.input_shape[0]//2#int(self.sec_dim/3)
+        self.input_shape = (48,48) 
         self.model = Sequential()
         input_dim = self.input_shape[0]*self.input_shape[1]
         for l in hidden_layers:
             self.model.add(Dense(l, 
                                  input_dim = input_dim, 
-                                 kernel_initializer="uniform", 
-                                 activation="relu", 
+                                 kernel_initializer="random_normal", 
+                                 activation="hard_sigmoid", 
                                  kernel_regularizer=rel()))
         self.model.add(Dense(2, 
-                             kernel_initializer="uniform", 
+                             kernel_initializer="random_normal", 
                              activation="softmax",
                              kernel_regularizer=rel()))
                         
@@ -63,39 +60,7 @@ class Localizer():
         
     def train(self, data, labels, epochs, batch_size):
         """ Trains the model with a list of pictures """
-#        
-#        picn = pics.shape[0] # number of pics
-#        data_size = picn*25 # sections to create from each picture
-#        data = []
-#        labels = []
-#        
-#        sec_dim = self.input_shape[0] # section size
-#        stride = self.stride # section stride
-#        
-#        ### Training data creation ###
-#        
-#        for n in range(data_size):
-#            # Get a random image index
-#            pic_ind = random.randint(0, picn-1)
-#            pic = pics[pic_ind,:].reshape(self.picshape)
-#        
-#            secs = utils.make_sections(pic.reshape(self.picshape), 
-#                                       sec_dim, stride)
-#            sec = random.choice(secs) # choosen section
-#            label = 0
-#            for b in boxs[pic_ind,:]:
-#                # If the bsection exactly contains a resistor mark as 1
-#                # I may need to relax this definition of error later on
-#                # Perhaps use the overlapping area with actual resistors
-#                if (sec == b).all():
-#                    label = 1
-#                    
-#            x1, y1 = sec[0], sec[1]
-#            x2, y2 = sec[2], sec[3]
-#            cropped = pic.reshape(self.picshape)[y1:y2, x1:x2].flatten()
-#            data.append(cropped)
-#            labels.append(to_categorical(label, 2))
-           
+
         #### Training ####
         
         ntrain = int(len(data)*0.8)
@@ -122,7 +87,8 @@ class Localizer():
         the predictions for each box and trhe probabilities. """
  
         secs = []
-        boxes = utils.make_sections(pic.shape, self.input_shape[0], self.stride)
+        sec_dim = self.input_shape[0]
+        boxes = utils.make_sections(pic.shape, sec_dim, pic.shape[0]//4)
         for b in boxes:
             x1, y1 = b[0], b[1]
             x2, y2 = b[2], b[3]
