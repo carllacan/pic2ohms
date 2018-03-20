@@ -20,10 +20,11 @@ localizer = Reader(input_shape=(48, 48),
 # Create the data generator
 
 generator = ResistorGenerator(batch_size = 15, 
-                             batches_per_epoch = 500)
+                             batches_per_epoch = 200,
+                             labeled_band=1)
           
 # Train the model
     
-epochs = 10
+epochs = 5
 
 localizer.train(generator, epochs)

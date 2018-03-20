@@ -11,18 +11,28 @@ from matplotlib import pyplot as plt
 class ResistorGenerator(Sequence):
     
     def __init__(self, batch_size, batches_per_epoch,
+                 labeled_band,
                  dim = 48):
         self.batch_size = batch_size
         self.batches_per_epoch = batches_per_epoch
         
         self.dim = dim
-        
+#        
+#        colors = ["Beig",
+#                  "Roig",
+#                  "Taronja",
+#                  "Verd",
+#                  "Violeta",
+#                  "Dorat"]
         colors = ["beige",
+                  "red",
+#                  "yellow",
+#                  "green",
                   "blue",
-                  "black",
                   "gold"]
         self.color_imgs = []
         for c in colors:
+#            fn =  'base_colors/Colorins/{}.png'.format(c)
             fn =  'base_colors/{}_resistor.png'.format(c)
             self.color_imgs.append(Image.open(fn))
 
@@ -73,7 +83,8 @@ class ResistorGenerator(Sequence):
 if __name__ == "__main__":
     # if called by itself generate five examples
     generator = ResistorGenerator(batch_size = 5, 
-                                 batches_per_epoch = 3)
+                                 batches_per_epoch = 3,
+                                 labeled_band=1)
     for r,l in zip(*generator.__getitem__(0)):
         print(l)
         plt.figure(figsize=(1,1))

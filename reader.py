@@ -34,16 +34,16 @@ class Reader():
         rel = lambda: l2(0.01)
         self.model = Sequential()
         input_dim = self.input_shape[0]*self.input_shape[1]
-        self.model.add(Conv2D(30, (4, 4), 
-                              strides = (2,2),
+        self.model.add(Conv2D(42, (4, 4), 
+                              strides = (1,1),
                               padding="valid",
                               input_shape=(48, 48, 3),
                               data_format="channels_last",
                               kernel_initializer="random_normal",
                               activation='relu',
                               kernel_regularizer=rel()))
-        self.model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
-        self.model.add(Conv2D(22, (4, 4), 
+        self.model.add(MaxPooling2D(pool_size=(4, 4), strides=(2, 2)))
+        self.model.add(Conv2D(15, (4, 4), 
                               strides = (2,2),
                               padding="valid",
                               data_format="channels_last",
