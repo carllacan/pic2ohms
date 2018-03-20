@@ -16,8 +16,8 @@ dataset = 4
 imgs_loc = 'datasets/dataset{0}/dataset{0}_imgs.csv'.format(dataset)
 boxs_loc = 'datasets/dataset{0}/dataset{0}_boxs.csv'.format(dataset)
 
-#pics = np.genfromtxt(imgs_loc, delimiter=',')
-#boxs = np.genfromtxt(boxs_loc, delimiter=',')
+pics = np.genfromtxt(imgs_loc, delimiter=',')
+boxs = np.genfromtxt(boxs_loc, delimiter=',')
 
 # Resize the box lists
 boxs = boxs.reshape(boxs.shape[0], -1, 4)

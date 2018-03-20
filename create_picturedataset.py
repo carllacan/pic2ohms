@@ -20,7 +20,7 @@ num = 450 # number of images to be generated
 pic_shape = 240, 240
 p = 0.4 # fraction of the area covered by resistors, in average
 real_bgs = False
-base_img = Image.open('base_pics/resistor1.png')
+base_img = Image.open('base_pics/resistor0.png')
 
 # Load backgrounds
 
