@@ -14,14 +14,13 @@ from keras.utils.np_utils import to_categorical
 
 # Create the NN model
  
-localizer = Reader(input_shape=(48, 48), 
-                      hidden_layers=(42,30,10))
+localizer = Reader(input_shape=(16, 48, 3))
 
 # Create the data generator
 
 generator = ResistorGenerator(batch_size = 15, 
                              batches_per_epoch = 200,
-                             labeled_band=1)
+                             labeled_band=2)
           
 # Train the model
     

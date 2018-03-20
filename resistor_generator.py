@@ -15,7 +15,7 @@ class ResistorGenerator(Sequence):
                  dim = 48):
         self.batch_size = batch_size
         self.batches_per_epoch = batches_per_epoch
-        
+        self.labeled_band = labeled_band-1
         self.dim = dim
 #        
 #        colors = ["Beig",
@@ -26,8 +26,8 @@ class ResistorGenerator(Sequence):
 #                  "Dorat"]
         colors = ["beige",
                   "red",
-#                  "yellow",
-#                  "green",
+                  "yellow",
+                  "green",
                   "blue",
                   "gold"]
         self.color_imgs = []
@@ -73,10 +73,13 @@ class ResistorGenerator(Sequence):
                 band = self.color_imgs[band_color].crop(box)
                 pic.paste(band, (band_pos, 0), band)
             
-            
-            pics.append(np.asarray(pic).reshape((48, 48, 3)))
-            label = to_categorical(bands[0]-1, len(self.color_imgs) - 2)
-            labels.append(label)
+            # Only the central third is relevant, actually
+            # Make it so that the image is generated with just that size
+            pic = pic.crop((0,16,48,32))
+            pics.append(np.asarray(pic))
+            label = bands[self.labeled_band]-1
+            labels.append(to_categorical(label, len(self.color_imgs) - 2))
+#            labels.append(bands)
 
         return np.array(pics), np.array(labels)
         
@@ -84,7 +87,7 @@ if __name__ == "__main__":
     # if called by itself generate five examples
     generator = ResistorGenerator(batch_size = 5, 
                                  batches_per_epoch = 3,
-                                 labeled_band=1)
+                                 labeled_band=2)
     for r,l in zip(*generator.__getitem__(0)):
         print(l)
         plt.figure(figsize=(1,1))

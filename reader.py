@@ -19,7 +19,7 @@ class Reader():
     
     """ ANN model that localizes resistors in a picture """
     def __init__(self, **params):
-        self.input_shape = (48,48)
+        self.input_shape = params['input_shape']
         
         if 'filepath' in params.keys():
             self.load_model(params['filepath'])
@@ -30,33 +30,39 @@ class Reader():
     def create_model(self, **params):
         # Convolutional model
         
-        hidden_layers = params['hidden_layers']
-        rel = lambda: l2(0.01)
+        rel = lambda: l2(0.2)
         self.model = Sequential()
-        input_dim = self.input_shape[0]*self.input_shape[1]
-        self.model.add(Conv2D(42, (4, 4), 
+        self.model.add(Conv2D(24, (3, 3), 
                               strides = (1,1),
                               padding="valid",
-                              input_shape=(48, 48, 3),
+                              input_shape=self.input_shape,
                               data_format="channels_last",
                               kernel_initializer="random_normal",
                               activation='relu',
                               kernel_regularizer=rel()))
-        self.model.add(MaxPooling2D(pool_size=(4, 4), strides=(2, 2)))
-        self.model.add(Conv2D(15, (4, 4), 
+        self.model.add(MaxPooling2D(pool_size=(3, 3), strides=(1, 1)))
+        self.model.add(Conv2D(16, (4, 4), 
                               strides = (2,2),
                               padding="valid",
                               data_format="channels_last",
                               kernel_initializer="random_normal",
                               activation='relu',
                               kernel_regularizer=rel()))
-        self.model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
+        self.model.add(MaxPooling2D(pool_size=(2, 2), strides=(1, 1)))
         self.model.add(Flatten())
+        self.model.add(Dense(100, 
+                             kernel_initializer="random_normal", 
+                             activation="relu",
+                             kernel_regularizer=rel()))
+        self.model.add(Dense(60, 
+                             kernel_initializer="random_normal", 
+                             activation="relu",
+                             kernel_regularizer=rel()))
         self.model.add(Dense(30, 
                              kernel_initializer="random_normal", 
-                             activation="softmax",
+                             activation="relu",
                              kernel_regularizer=rel()))
-        self.model.add(Dense(2, 
+        self.model.add(Dense(4, 
                              kernel_initializer="random_normal", 
                              activation="softmax",
                              kernel_regularizer=rel()))
@@ -84,7 +90,7 @@ class Reader():
                 
         ### Validation ####
         
-        a, acc = self.model.evaluate_generator(generator, steps=1000)
+        a, acc = self.model.evaluate_generator(generator, steps=100)
         print("Accuracy: {:4.2f} %".format(acc*100)) 
         
 
