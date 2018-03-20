@@ -2,8 +2,9 @@
 # -*- coding: utf-8 -*-
 
 from keras.utils import Sequence
-
+from keras.utils.np_utils import to_categorical
 import random
+import numpy as np
 from PIL import Image
 from matplotlib import pyplot as plt
 
@@ -13,15 +14,17 @@ class PictureGenerator(Sequence):
                  resistor_prob,
                  real_backgrounds,
                  angle_num,
+                 flatten,
                  dim = 48
                  ):
         self.batch_size = batch_size
-        self.batches_pre_epoch = batches_per_epoch
+        self.batches_per_epoch = batches_per_epoch
         # this generator can be used to train either the localizer or the
         # goniometer model, so it must be told what to return
         self.return_angles = return_angles 
         self.resistor_prob = resistor_prob
         self.real_backgrounds = real_backgrounds
+        self.flatten = flatten
         self.dim = dim
         
         self.initial_angle = 45 # angle the base resistor is oriented at
@@ -84,13 +87,18 @@ class PictureGenerator(Sequence):
                 # TODO add non-centered resistors?
                 pass
                 
-            pics.append(pic)
-            if not self.return_angles:
-                labels.append(resistor)
+            if self.flatten:
+                pics.append(np.asarray(pic).flatten())
             else:
-                labels.append(angle + self.initial_angle)
+                pics.append(np.asarray(pic).reshape((48, 48, 1)))
 
-        return pics, labels
+            if not self.return_angles:
+                labels.append(to_categorical(resistor, 2))
+            else:
+                real_angle = (angle + self.initial_angle) % 360
+                labels.append(real_angle)
+
+        return np.array(pics), np.array(labels)
         
 if __name__ == "__main__":
     # if called by itself generate five examples
@@ -99,10 +107,11 @@ if __name__ == "__main__":
                                  return_angles = True,
                                  resistor_prob = 0.5,
                                  real_backgrounds = True,
-                                 angle_num = 8)
+                                 angle_num = 8,
+                                 flatten=False)
     for r,l in zip(*generator.__getitem__(0)):
         print(l)
         plt.figure(figsize=(1,1))
-        plt.imshow(r, cmap = 'gray' )
+        plt.imshow(r.reshape(generator.dim, generator.dim), cmap = 'gray' )
         plt.axis("off")
         plt.show()

@@ -8,6 +8,9 @@ Created on Sat Feb 24 12:08:57 2018
 
 from keras.models import Sequential
 from keras.layers import Dense
+from keras.layers import Conv2D
+from keras.layers import Flatten
+from keras.layers import MaxPooling2D
 from keras.regularizers import l2, l1
 from keras.utils.np_utils import to_categorical
 from keras.models import load_model
@@ -31,16 +34,58 @@ class Localizer():
     def create_model(self, **params):
         
         hidden_layers = params['hidden_layers']
-        rel = lambda: l2(0.2)
+        rel = lambda: l2(0.01)
         self.input_shape = (48,48) 
         self.model = Sequential()
         input_dim = self.input_shape[0]*self.input_shape[1]
-        for l in hidden_layers:
+        self.model.add(Dense(hidden_layers[0], 
+                             input_dim = input_dim, 
+                             kernel_initializer="random_normal", 
+                             activation="hard_sigmoid", 
+                             kernel_regularizer=rel()))
+        for l in hidden_layers[1:]:
             self.model.add(Dense(l, 
-                                 input_dim = input_dim, 
                                  kernel_initializer="random_normal", 
                                  activation="hard_sigmoid", 
                                  kernel_regularizer=rel()))
+        self.model.add(Dense(2, 
+                             kernel_initializer="random_normal", 
+                             activation="softmax",
+                             kernel_regularizer=rel()))
+                        
+        # for probs log-loss seeems t be better
+        self.model.compile(loss="categorical_crossentropy", 
+                           optimizer="adam", metrics=['accuracy'])
+        
+    def create_model(self, **params):
+        # Convolutional model
+        
+        hidden_layers = params['hidden_layers']
+        rel = lambda: l2(0.01)
+        self.model = Sequential()
+        input_dim = self.input_shape[0]*self.input_shape[1]
+        self.model.add(Conv2D(30, (4, 4), 
+                              strides = (2,2),
+                              padding="valid",
+                              input_shape=(48, 48, 1),
+                              data_format="channels_last",
+                              kernel_initializer="random_normal",
+                              activation='relu',
+                              kernel_regularizer=rel()))
+        self.model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
+        self.model.add(Conv2D(22, (4, 4), 
+                              strides = (2,2),
+                              padding="valid",
+                              data_format="channels_last",
+                              kernel_initializer="random_normal",
+                              activation='relu',
+                              kernel_regularizer=rel()))
+        self.model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
+        self.model.add(Flatten())
+        self.model.add(Dense(30, 
+                             kernel_initializer="random_normal", 
+                             activation="softmax",
+                             kernel_regularizer=rel()))
         self.model.add(Dense(2, 
                              kernel_initializer="random_normal", 
                              activation="softmax",
@@ -58,28 +103,18 @@ class Localizer():
         """Saves  model to a file """
         self.model.save(filepath)
         
-    def train(self, data, labels, epochs, batch_size):
+         
+    def train(self, generator, epochs):
         """ Trains the model with a list of pictures """
+        # generator version
 
         #### Training ####
-        
-        ntrain = int(len(data)*0.8)
-        # The images are already created at random, I probably don't need to
-        #   select the training datapoints randomly
-        
-        self.model.fit(np.array(data[0:ntrain]), 
-                       np.array(labels[0:ntrain]), 
-                       batch_size, epochs)
-        
-        # since sections are already created at random I might not need to
-        #   select the training samples randomly
-        
+
+        self.model.fit_generator(generator, epochs=epochs)
+                
         ### Validation ####
         
-        nval = int(len(data)*0.2)
-        a, acc = self.model.evaluate(np.array(data[0:nval]), 
-                                      np.array(labels[0:nval]),
-                                      batch_size=128)
+        a, acc = self.model.evaluate_generator(generator, steps=1000)
         print("Accuracy: {:4.2f} %".format(acc*100)) 
         
     def predict(self, pic):
@@ -92,7 +127,7 @@ class Localizer():
         for b in boxes:
             x1, y1 = b[0], b[1]
             x2, y2 = b[2], b[3]
-            secs.append(pic[y1:y2, x1:x2].flatten() )
+            secs.append(pic[y1:y2, x1:x2].reshape(48, 48, 1 ))
         preds = self.model.predict_classes(np.array(secs))
         probs = self.model.predict(np.array(secs))
 
