@@ -31,7 +31,7 @@ class PictureGenerator(Sequence):
         self.angle_num = angle_num
         self.angles = range(0, 360, 360//self.angle_num)
         
-        resistor_num = 1
+        resistor_num = 2
         self.resistors = []
         for i in range(resistor_num):
             fn =  'base_pics/resistor{}.png'.format(i)
