@@ -10,17 +10,11 @@ from matplotlib import pyplot as plt
 
 class ResistorGenerator(Sequence):
     
-    def __init__(self, batch_size, batches_per_epoch, return_angles,
-                 resistor_prob,
-                 real_backgrounds,
-                 angle_num,
-                 flatten,
-                 dim = 48
-                 ):
+    def __init__(self, batch_size, batches_per_epoch,
+                 dim = 48):
         self.batch_size = batch_size
         self.batches_per_epoch = batches_per_epoch
         
-        self.flatten = flatten
         self.dim = dim
         
         colors = ["beige",
@@ -32,8 +26,6 @@ class ResistorGenerator(Sequence):
             fn =  'base_colors/{}_resistor.png'.format(c)
             self.color_imgs.append(Image.open(fn))
 
-            
-        
     def __len__(self):
         return self.batches_per_epoch
     
@@ -57,11 +49,13 @@ class ResistorGenerator(Sequence):
             
             first = random.randint(4, 6) # position of the first band
             width = random.randint(2, 4) # width of the bands
-            sep = width + random.randint(2, 4) # separation between the bands
+            sep = width + random.randint(2, 2) # separation between the bands
+            bands = []
             for i in range(0, 4):
                 if i < 3:
-                    band_color = random.randint(1, len(self.color_imgs)-1)
+                    band_color = random.randint(1, len(self.color_imgs)-2)
                     band_pos = first + i*width + i*sep 
+                    bands.append(band_color)
                 else: # if it's the last ring
                     band_color = -1 # gold
                     band_pos = 40 + random.randint(-2, 2)
@@ -71,22 +65,17 @@ class ResistorGenerator(Sequence):
             
             
             pics.append(np.asarray(pic).reshape((48, 48, 3)))
-
-            labels.append(0)
+            label = to_categorical(bands[0]-1, len(self.color_imgs) - 2)
+            labels.append(label)
 
         return np.array(pics), np.array(labels)
         
 if __name__ == "__main__":
     # if called by itself generate five examples
     generator = ResistorGenerator(batch_size = 5, 
-                                 batches_per_epoch = 3,
-                                 return_angles = True,
-                                 resistor_prob = 0.5,
-                                 real_backgrounds = True,
-                                 angle_num = 8,
-                                 flatten=False)
+                                 batches_per_epoch = 3)
     for r,l in zip(*generator.__getitem__(0)):
-#        print(l)
+        print(l)
         plt.figure(figsize=(1,1))
         plt.imshow(r, cmap = 'gray' )
         plt.axis("off")
