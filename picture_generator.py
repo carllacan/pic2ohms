@@ -78,17 +78,17 @@ class PictureGenerator(Sequence):
                 angle = random.choice(self.angles)
                 resis_img = random.choice(self.resistors) [angle]
                 
-                resis_img = resis_img.rotate(angle)
+#                resis_img = resis_img.rotate(angle)
                 pic.paste(resis_img, (0, 0, self.dim,self.dim), resis_img)
             else:
-                # TODO add non-centered resistors
+                # TODO add non-centered resistors?
                 pass
                 
             pics.append(pic)
             if not self.return_angles:
                 labels.append(resistor)
             else:
-                labels.append(angle)
+                labels.append(angle + self.initial_angle)
 
         return pics, labels
         
@@ -96,11 +96,13 @@ if __name__ == "__main__":
     # if called by itself generate five examples
     generator = PictureGenerator(batch_size = 5, 
                                  batches_per_epoch = 3,
-                                 return_angles = False,
+                                 return_angles = True,
                                  resistor_prob = 0.5,
                                  real_backgrounds = True,
                                  angle_num = 8)
-    for r in generator.__getitem__(0)[0]:
+    for r,l in zip(*generator.__getitem__(0)):
+        print(l)
         plt.figure(figsize=(1,1))
         plt.imshow(r, cmap = 'gray' )
         plt.axis("off")
+        plt.show()
