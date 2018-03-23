@@ -75,7 +75,7 @@ class ResistorGenerator(Sequence):
             
             # Only the central third is relevant, actually
             # Make it so that the image is generated with just that size
-            pic = pic.crop((0,16,48,32))
+#            pic = pic.crop((0,16,48,32))
             pics.append(np.asarray(pic))
             label = bands[self.labeled_band]-1
             labels.append(to_categorical(label, len(self.color_imgs) - 2))

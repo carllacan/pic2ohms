@@ -20,6 +20,7 @@ import random
 import utils
 from goniometer import Goniometer
 
+# TODO: use a generator
 
 dataset = 5
 pics_loc = 'datasets/dataset{0}/dataset{0}_imgs.csv'.format(dataset)

@@ -22,6 +22,7 @@ from localizer import Localizer
 from goniometer import Goniometer
 
 # TODO: showcase localizer and goniometer
+# create a picture
 # load the best localizer and goniometer
 # load an image 
 # make a b/w version
@@ -34,15 +35,13 @@ from goniometer import Goniometer
 # TODO: test_localizer converts to BW by itself
 # TODO: goniometer.get_angle()
 
-picture = Image.open('test_pictures/test0.png')
 
-#localizer = Localizer(filepath='datasets/dataset4/best_model')
-#goniometer = Goniometer(filepath='datasets/dataset5/best_model')
+localizer = Localizer(filepath='datasets/dataset4/best_model')
+goniometer = Goniometer(filepath='datasets/dataset5/best_model')
 
 picture_bw = picture.convert('F')
 
 resis_boxs = localizer.localize(np.asarray(picture_bw))
-utils.test_localizer(localizer, np.asarray(picture_bw))
 plt.show()
 resis_pics = [] # cropped pictures of the resistors
 

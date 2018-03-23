@@ -20,7 +20,7 @@ localizer = Reader(input_shape=(16, 48, 3))
 
 generator = ResistorGenerator(batch_size = 15, 
                              batches_per_epoch = 200,
-                             labeled_band=2)
+                             labeled_band=3)
           
 # Train the model
     
