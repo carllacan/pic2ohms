@@ -100,6 +100,9 @@ class PictureGenerator(Sequence):
 
         return np.array(pics), np.array(labels)
         
+    def generate_picture(self):
+        pass
+    
 if __name__ == "__main__":
     # if called by itself generate five examples
     generator = PictureGenerator(batch_size = 5, 
